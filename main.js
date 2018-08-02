@@ -1,10 +1,27 @@
-// "Macros" (just constants, really)
+/// PAUL CHO & CHRIS KING, 2018
+/*
+CHORES:
+
+CORE:
+-- Create a masking and collision detection lib, line-based (sprite based is... okay, but it requires more memory. Math based is better, afaik.)
+-- Create a mouse-detection system that functions either within or akin to our already-existing INPUT.JS
+
+HOUSEKEEPING: (less important tasks)
+-- (maybe) convert display to WebGL (shaders are nice to have)
+-- Figure out less intense solution to object sorting (2 sorts, 60 times a second?? We can do better, I'm sure.)
+-- Figure out how to limit the amount of any one sound playing. Non-essential, but something I've wanted built-in to other engines.
+-- Rename anything that seems silly or irresponsibly named at the moment, like "structObj." That name is a bit vague.
+*/
+
+
+
+// "Macros" (just constants, really. I'll figure out something more elegant for this later.)
 /*#macro*/ EV_STEP =		0;
 /*#macro*/ EV_DRAW =		1;
 /*#macro*/ events  = 		[EV_STEP, EV_DRAW];
 
 //Input Vars
-holdLeft = holdRight = false;
+//holdLeft = holdRight = false;
 
 //Objects
 structObj = [];
@@ -19,10 +36,9 @@ window.onload = function() {
 	canv.height = 160;
 	ctx.imageSmoothingEnabled = false;
 
-	oPlayer = new Player(false);
-	oPlayer2 = new Player(true);
+	oPlayer = new Player(16,16);
 
-	setInterval(update,1000/30);
+	setInterval(update,1000/60);
 	document.addEventListener("keydown",	keyDown);
 	document.addEventListener("keyup",		keyUp);
 }
@@ -95,10 +111,10 @@ function update() {
 			objectEvent( structObj[_j], events[_i] );
 		}
 	}
-
+	//Update keyboard inputs
 	keyUpdate();
 }
-
+/*
 //Key Press
 function keyDown(evt) {
 	switch(evt.key) {
@@ -127,16 +143,17 @@ function keyUp(evt) {
 			break;
 	}
 } //returns NOTHING
-
+*/
 
 
 
 
 // Player 
-function Player(lock) {
-	this.x = 8 + lock;
-	this.y = 17;
-	this.lock = lock;
+function Player(xx,yy) {
+	this.x = xx; //+ lock;
+	this.y = yy;
+	this.hsp = 0;
+	this.vsp = 0;
 	this.priority = 1;
 	this.depth = 0;
 	this.sprite = new loadSprite("sOcto");
@@ -145,8 +162,15 @@ function Player(lock) {
 
 	Player.prototype.evStep = function() {
 		//this.x += 1.00 * (holdRight - holdLeft) * (this.lock==true);
-		this.x = 8 + 16*(keyPress(39)||keyRelease(39));
-		this.depth = this.x;
+
+		//this.hsp = keyPress(39) ? 2.0 : Math.max(this.hsp-0.2, 0);
+		//Update horizontal and vertical speed based on input, or lackthereof
+		this.hsp = ( keyPress(37) || keyPress(39) ) ? 2.0*(keyPress(39)-keyPress(37)) : Math.sign(this.hsp)*Math.max( Math.abs(this.hsp)-0.2, 0);
+		this.vsp = ( keyPress(38) || keyPress(40) ) ? 2.0*(keyPress(40)-keyPress(38)) : Math.sign(this.vsp)*Math.max( Math.abs(this.vsp)-0.2, 0);
+
+		this.x += this.hsp;//= 8 + 16*(keyPress(39)||keyRelease(39));
+		this.y += this.vsp;
+		this.depth = this.y;
 	}
 
 	Player.prototype.evDraw = function() {

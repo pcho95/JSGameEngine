@@ -3,10 +3,13 @@
 arrayInput = [];
 arrayLastInput = [];
 
-//Capture keyboard inputs
-onkeydown = onkeyup = function(key) {
-	arrayInput[key.keyCode] = key.type == 'keydown';
+for (var _i=0; _i < 222; _i++) {
+	arrayInput[_i] = false;
+	arrayLastInput[_i] = false;
 }
+
+//Capture keyboard inputs
+
 
 //Functions
 function keyPress(key) {
@@ -23,4 +26,7 @@ function keyHold(key) {
 
 function keyUpdate() {
 	arrayLastInput = arrayInput.slice();
+	onkeydown = onkeyup = function(key) {
+		arrayInput[key.keyCode] = key.type == 'keydown';
+	}
 }
