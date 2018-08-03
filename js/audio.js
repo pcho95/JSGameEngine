@@ -4,7 +4,7 @@
 mapAudio = new Map();
 
 //Sound Object
-function sound(src) {
+function Sound(src) {
     this.sound = new Audio("audio/" + src + ".ogg");
     this.sound.volume = 1.0;
     //this.sound.setAttribute("preload", "true");
@@ -12,31 +12,31 @@ function sound(src) {
     //this.sound.style.display = "none";
 } 
 
-sound.prototype.play = function(){
+Sound.prototype.play = function(){
         this.sound.play();
     }
 
-sound.prototype.pause = function(){
+Sound.prototype.pause = function(){
     this.sound.pause();
 }
 
-sound.prototype.stop = function(){
+Sound.prototype.stop = function(){
     this.sound.pause();
     delete this;
 }
 
-sound.prototype.loop = function(val){
+Sound.prototype.loop = function(val){
     this.sound.loop = val;
 }
 
-sound.prototype.volume = function(val){
+Sound.prototype.volume = function(val){
     this.sound.volume = val;
 }
 
 
 //Sound Functions
 function audio_play( src, volume, loop ) {
-    var _s = new sound(src);
+    var _s = new Sound(src);
     _s.loop( loop );
     _s.volume( volume )
 }
