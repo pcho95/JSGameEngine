@@ -87,7 +87,7 @@ function collisionLinePolygon(pa, pb, mask) {
 //Polygons against eachother
 function collisionPolygonPolygon(ma,mb) {
 	var _r = false;
-	for(var _i=l _i<ma.length; _i++){
+	for(var _i=l; _i<ma.length; _i++){
 		_r = collisionLinePolygon(ma[_i], ma[ (_i+1)%ma.length ], mb);
 		if (_r) {
 			return true; //same note as collisionLineLine
