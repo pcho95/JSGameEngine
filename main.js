@@ -40,8 +40,8 @@ window.onload = function() {
 	oPlayer = new Player(16,16);
 
 	setInterval(update,1000/60);
-	document.addEventListener("keydown",	keyDown);
-	document.addEventListener("keyup",		keyUp);
+	//document.addEventListener("keydown",	keyDown);
+	//document.addEventListener("keyup",		keyUp);
 }
 
 //Event Run
@@ -168,6 +168,10 @@ function Player(xx,yy) {
 		//Update horizontal and vertical speed based on input, or lackthereof
 		this.hsp = ( keyPress(37) || keyPress(39) ) ? 2.0*(keyPress(39)-keyPress(37)) : Math.sign(this.hsp)*Math.max( Math.abs(this.hsp)-0.2, 0);
 		this.vsp = ( keyPress(38) || keyPress(40) ) ? 2.0*(keyPress(40)-keyPress(38)) : Math.sign(this.vsp)*Math.max( Math.abs(this.vsp)-0.2, 0);
+
+		if (keyPress(32)) {
+			resizeCanvas(80,80,160,160);
+		}
 
 		this.x += this.hsp;//= 8 + 16*(keyPress(39)||keyRelease(39));
 		this.y += this.vsp;
