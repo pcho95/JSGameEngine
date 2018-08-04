@@ -32,15 +32,25 @@ function Point(xx,yy) {
 
 //Collision mask
 function Mask(p) {
-	this.points = [];
-	if (p.constructor === Array) {
-		this.points = p.slice();
-	} else {
+	this.rawpoints = [];
+	//if (p.constructor === Array) {
+	//	this.points = p.slice();
+	//} else {
 		for (var _i = 0; _i < arguments.length; _i++) {
-			this.points[_i] = p[_i];
+			this.rawpoints[_i] = new Point(arguments[_i][0], arguments[_i][1] ); //p[_i];
 		}
-	}
+	//}
+	this.points = [];
+	this.points = this.rawpoints.slice();
 }
+
+	Mask.prototype.update = function(xx,yy) {
+		//var _r = this.rawpoints.slice();
+		for (var _i=0; _i<this.rawpoints.length; _i++) {
+			this.points[_i] = new Point( this.rawpoints[_i].x + xx, this.rawpoints[_i].y + yy);
+		}
+		//this.rawpoints = _r.slice();
+	}
 
 //Line-Line Collision
 //Based on this solution: https://gamedev.stackexchange.com/questions/26004/how-to-detect-2d-line-on-line-collision
@@ -67,8 +77,8 @@ function collisionLinePolygon(pa, pb, mask) {
 	var _r = false;
 	
 	//Line-based
-	for(var _i=0; _i<mask.length; _i++) {
-		_r = collisionLineLine( pa, pb, mask[_i], mask[ (_i+1)%mask.length ] );
+	for(var _i=0; _i<mask.points.length; _i++) {
+		_r = collisionLineLine( pa, pb, mask.points[_i], mask.points[ (_i+1)%mask.points.length ] );
 		if (_r) {
 			return true; //change to be mask owner or something
 		}
@@ -87,8 +97,14 @@ function collisionLinePolygon(pa, pb, mask) {
 //Polygons against eachother
 function collisionPolygonPolygon(ma,mb) {
 	var _r = false;
-	for(var _i=l; _i<ma.length; _i++){
-		_r = collisionLinePolygon(ma[_i], ma[ (_i+1)%ma.length ], mb);
+	for(var _i=0; _i<ma.points.length; _i++){
+		_r = collisionLinePolygon(ma.points[_i], ma.points[ (_i+1)%ma.points.length ], mb);
+		if (_r) {
+			return true; //same note as collisionLineLine
+		}	
+	}
+	for(var _i=0; _i<mb.points.length; _i++){
+		_r = collisionLinePolygon(mb.points[_i], mb.points[ (_i+1)%mb.points.length ], ma);
 		if (_r) {
 			return true; //same note as collisionLineLine
 		}	
@@ -98,9 +114,9 @@ function collisionPolygonPolygon(ma,mb) {
 
 //Point inside of a polygon
 //Adapted from https://github.com/substack/point-in-polygon under MIT license
-function collisionPointPolygon(p,m){
+function collisionPointPolygon(p,mask){
     var x = p.x, y = p.y;
-
+    var m = mask.points;
     var inside = false;
     for (var i = 0, j = m.length - 1; i < m.length; j = i++) {
         var xi = m[i].x, yi = m[i].y;
@@ -112,4 +128,25 @@ function collisionPointPolygon(p,m){
     }
 
     return inside;
+}
+
+//Render collision mask
+function drawMask(x,y,m,color) {
+
+	var _c = ctx.strokeStyle;
+	mask = m.points;
+
+	if (arguments.length>3) {
+		ctx.strokeStyle = getColorCode(color);
+	}
+
+	for(var _i=0; _i<mask.length; _i++){
+		var _pa, _pb;
+		_pa = mask[_i];
+		_pb = mask[ (_i+1)%mask.length ];
+
+		drawLine( _pa, _pb/*, [x,y]*/ );
+	}
+
+	ctx.strokeStyle = _c;
 }
