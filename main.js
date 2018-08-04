@@ -37,8 +37,9 @@ window.onload = function() {
 	canv.height = 160;
 	ctx.imageSmoothingEnabled = false;
 
-	oPlayer = new Player(16,16);
-	oBox = new Box( 80, 40, 32, 32);
+	//oPlayer = new Player(16,16);
+	oPlayer = instanceCreate(16,16,'Player');
+	oBox = instanceCreate(80,40,'Box',[32,32]);//new Box( 80, 40, 32, 32);
 
 	setInterval(update,1000/60);
 	//document.addEventListener("keydown",	keyDown);
@@ -118,83 +119,4 @@ function update() {
 }
 
 
-// Player 
-function Player(xx,yy) {
-	this.x = xx; //+ lock;
-	this.y = yy;
-	this.hsp = 0;
-	this.vsp = 0;
-	this.priority = 1;
-	this.depth = 0;
-	this.sprite = new loadSprite("sOcto");
-	//this.mask = new Mask( new Point(2,2), new Point(3,-5), new Point(-2, 0) );
-	this.mask = new Mask( [0,0], [8,0], [4, -2], [2, -4], [0, -8] );
 
-	//Add to object array
-	structObj[ structObj.length ] = this;
-} //OBJECT
-
-	Player.prototype.evStep = function() {
-		//this.x += 1.00 * (holdRight - holdLeft) * (this.lock==true);
-
-		//this.hsp = keyPress(39) ? 2.0 : Math.max(this.hsp-0.2, 0);
-		//Update horizontal and vertical speed based on input, or lackthereof
-		this.hsp = ( keyPress(37) || keyPress(39) ) ? 1.0*(keyPress(39)-keyPress(37)) : Math.sign(this.hsp)*Math.max( Math.abs(this.hsp)-0.2, 0);
-		this.vsp = ( keyPress(38) || keyPress(40) ) ? 1.0*(keyPress(40)-keyPress(38)) : Math.sign(this.vsp)*Math.max( Math.abs(this.vsp)-0.2, 0);
-
-		if (keyPress(32)) {
-			resizeCanvas(80,80,160,160);
-		}
-
-		this.x += this.hsp;//= 8 + 16*(keyPress(39)||keyRelease(39));
-		this.y += this.vsp;
-		this.depth = this.y;
-
-		this.mask.update(this.x,this.y);
-	}
-
-	Player.prototype.evDraw = function() {
-		//this.sprite.draw(this.x,this.y);
-		drawSetColor( 'red');
-		if (collisionPolygonPolygon(this.mask, structObj[1].mask)) {
-			drawSetColor( 'green');
-		}
-		//drawLine( 0, 0, this.x, this.y );
-		//console.log(this.mask)
-		drawMask( this.x, this.y, this.mask );
-	}
-
-	Player.prototype.evDestroy = function() {
-		delete this;
-	}
-
-
-// Player 
-function Box(xx,yy,aa,bb) {
-	this.x = xx; //+ lock;
-	this.y = yy;
-	this.priority = 1;
-	this.depth = 0;
-	//this.mask = new Mask( new Point(2,2), new Point(3,-5), new Point(-2, 0) );
-	this.mask = new Mask( [0,0], [aa,0], [aa, bb], [0,bb] );
-
-	//Add to object array
-	structObj[ structObj.length ] = this;
-} //OBJECT
-
-	Box.prototype.evStep = function() {
-		this.depth = this.y;
-		this.mask.update(this.x,this.y);
-	}
-
-	Box.prototype.evDraw = function() {
-		drawSetColor( 'yellow');
-		if (collisionPolygonPolygon(this.mask, structObj[0].mask)) {
-			drawSetColor( 'blue');
-		}
-		drawMask( this.x, this.y, this.mask );
-	}
-
-	Box.prototype.evDestroy = function() {
-		delete this;
-	}

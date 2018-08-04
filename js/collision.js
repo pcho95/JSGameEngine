@@ -52,6 +52,17 @@ function Mask(p) {
 		//this.rawpoints = _r.slice();
 	}
 
+//Collision per-object
+function collisionObject(owner,object) {
+	var _ol = instanceMap.get(object);
+	var _r = false;
+	for (var _i=0; _i<_ol.length; _i++) {
+		_r = collisionPolygonPolygon( owner.mask, _ol[_i].mask );
+		if (_r) {return true};
+	}
+	return false;
+}
+
 //Line-Line Collision
 //Based on this solution: https://gamedev.stackexchange.com/questions/26004/how-to-detect-2d-line-on-line-collision
 function collisionLineLine(pa, pb, pc, pd)
@@ -62,7 +73,7 @@ function collisionLineLine(pa, pb, pc, pd)
     _b = ((pa.y - pc.y) * (pb.x - pa.x)) - ((pa.x - pc.x) * (pb.y - pa.y));
 
     if (_d == 0) {
-    	return (_a == 0 && _b == 0);
+    	return false; //because of point-collision, we can just ditch coincident lines //(_a == 0 && _b == 0);
     }
 
     _r = _a / _d;
