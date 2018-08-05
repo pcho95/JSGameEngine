@@ -1,9 +1,12 @@
 //instance.js
 //Instances are objects that exist within the gameworld and run code of their own on a per-update basis
 
+//DO NOT MODIFY THIS PORTION OF THE CODE
+
 instanceMap = new Map();
 instanceID = 0;
 
+//Create a copy of an object in-game
 function instanceCreate(xx, yy, obj, param) {
 	var _o = new window[obj](param);
 	_o.x = xx;
@@ -20,9 +23,23 @@ function instanceCreate(xx, yy, obj, param) {
 
 	structObj[ structObj.length ] = _o;
 
-	console.log(instanceMap);
+	//console.log(instanceMap);
 	return _o;
 }
+
+//Runs a provided operation on all instances of an object
+function forAll(object, func, ret) {
+	var _ol = instanceMap.get(object);
+	var _r = false;
+	for (var _i=0; _i<_ol.length; _i++) {
+		_r = func( _ol[_i] );
+		if (ret && ( _r !== null ) ) {return _r};
+	}
+	return null;
+}
+
+// NOTHING BEFORE THIS POINT SHOULD BE MODIFIED FOR THE PROGRAM
+// BEYOND THIS POINT, OBJECTS CAN BE DEFINED FOR THE PROGRAM
 
 // Player
 function Player() {
@@ -85,7 +102,7 @@ function Box(arr) {
 	this.priority = 2;
 	this.depth = 0;
 	this.mask = new Mask( this, [0,0], [aa,0], [aa, bb], [0,bb] );
-	
+
 	return this;
 }
 
@@ -108,3 +125,33 @@ function Box(arr) {
 	Box.prototype.evDestroy = function() {
 		delete this;
 	}
+
+//Parent Map
+parentMap = new Map();
+//format : < object, theParentOfThatObject >
+parentMap.set('Player', null );
+parentMap.set('Box', 'Player' );
+
+//Child Map
+//Automatically populate the map based on pre-defined parentage
+childMap = new Map();
+var _m = Array.from(parentMap.keys());
+//console.log(_m);
+for (var _i=0; _i<_m.length; _i++) {
+	var _key = _m[_i];
+	var _val = parentMap.get(_key);
+
+	//Skip if there is no parent for this object
+	if (_val === null) {
+		continue;
+	}
+
+	var _children = [];
+	var _v = childMap.get(_val);
+	if (_v !== undefined) {
+		_children = _v.slice();
+	}
+	_children[_children.length] = _key;
+	childMap.set( _val, _children.slice() )
+}
+//console.log(childMap);

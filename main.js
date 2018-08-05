@@ -17,9 +17,10 @@ HOUSEKEEPING: (less important tasks)
 
 
 // "Macros" (just constants, really. I'll figure out something more elegant for this later.)
-/*#macro*/ EV_STEP =		0;
-/*#macro*/ EV_DRAW =		1;
-/*#macro*/ events  = 		[EV_STEP, EV_DRAW];
+/*#macro*/ EV_STEP 	=		0;
+/*#macro*/ EV_DRAW 	=		1;
+/*#macro*/ events  	= 		[EV_STEP, EV_DRAW];
+/*#macro*/ fps		=		60;
 
 //Input Vars
 //holdLeft = holdRight = false;
@@ -43,13 +44,10 @@ window.onload = function() {
 	canv.height = 160;
 	ctx.imageSmoothingEnabled = false;
 
-	//oPlayer = new Player(16,16);
-	oPlayer = instanceCreate(16,16,'Player');
-	oBox = instanceCreate(80,40,'Box',[32,32]);//new Box( 80, 40, 32, 32);
+	gameStart();
 
-	setInterval(update,1000/60);
-	//document.addEventListener("keydown",	keyDown);
-	//document.addEventListener("keyup",		keyUp);
+	setInterval(update,1000/fps);
+
 }
 
 //Event Run
@@ -105,20 +103,25 @@ function update() {
 	//Run All Events
 	for (var _i=0; _i < events.length; _i++) {
 		switch(events[_i]) {
+
 			//For step, run in order of priority
 			case EV_STEP:
 				structObj.sort(function(a,b){
 					return (a.priority - b.priority);
 			}); break;
+
 			//For draw, run in order of depth
 			case EV_DRAW:
 				structObj.sort(function(a,b){
 					return (b.depth - a.depth);
 			}); break;
 		}
+
+		//Run the appropriate event
 		for (var _j=0; _j < structObj.length; _j++) {
 			objectEvent( structObj[_j], events[_i] );
 		}
+
 	}
 	//Update keyboard inputs
 	keyUpdate();
