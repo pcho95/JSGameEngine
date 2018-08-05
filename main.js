@@ -33,6 +33,12 @@ forceCrash = false;
 window.onload = function() {
 	canv=document.getElementById("gc");
 	ctx=canv.getContext("2d");
+
+	if (ctx === null) {
+		console.log('WebGL not available!');
+		return;
+	}
+
 	canv.width = 160;
 	canv.height = 160;
 	ctx.imageSmoothingEnabled = false;

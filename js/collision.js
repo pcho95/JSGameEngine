@@ -33,21 +33,30 @@ function Point(xx,yy) {
 //Collision mask
 function Mask(p) {
 	this.rawpoints = [];
-	//if (p.constructor === Array) {
-	//	this.points = p.slice();
-	//} else {
-		for (var _i = 0; _i < arguments.length; _i++) {
-			this.rawpoints[_i] = new Point(arguments[_i][0], arguments[_i][1] ); //p[_i];
-		}
-	//}
+
+	for (var _i = 1; _i < arguments.length; _i++) {
+		this.rawpoints[_i-1] = new Point(arguments[_i][0], arguments[_i][1] ); //p[_i];
+	}
+
 	this.points = [];
 	this.points = this.rawpoints.slice();
+
+	this.owner = arguments[0];
 }
 
 	Mask.prototype.update = function(xx,yy) {
 		//var _r = this.rawpoints.slice();
+
+		var _pt;
+		var _r = this.owner.rotation + 90;
+		var _s = this.owner.scale;
+
 		for (var _i=0; _i<this.rawpoints.length; _i++) {
-			this.points[_i] = new Point( this.rawpoints[_i].x + xx, this.rawpoints[_i].y + yy);
+			_pt = this.rawpoints[_i];
+			this.points[_i] = 
+				new Point( 
+				_s*(( dsin(_r)*_pt.x ) - ( dcos(_r)*_pt.y )) + xx, 
+				_s*(( dsin(_r)*_pt.y ) + ( dcos(_r)*_pt.x )) + yy);
 		}
 		//this.rawpoints = _r.slice();
 	}

@@ -8,6 +8,8 @@ function instanceCreate(xx, yy, obj, param) {
 	var _o = new window[obj](param);
 	_o.x = xx;
 	_o.y = yy;
+	_o.rotation = 0.0;
+	_o.scale = 1.0;
 
 	var _n = instanceMap.get(obj);
 	if (_n === undefined) {
@@ -16,7 +18,10 @@ function instanceCreate(xx, yy, obj, param) {
 	_n[ _n.length ] = _o;
 	instanceMap.set(obj,_n);
 
+	structObj[ structObj.length ] = _o;
+
 	console.log(instanceMap);
+	return _o;
 }
 
 // Player
@@ -28,10 +33,7 @@ function Player() {
 	this.priority = 1;
 	this.depth = 0;
 	this.sprite = new loadSprite("sOcto");
-	this.mask = new Mask( [0,0], [8,0], [4, -2], [2, -4], [0, -8] );
-
-	//Add to object array
-	structObj[ structObj.length ] = this;
+	this.mask = new Mask( this, [0,0], [8,0], [4, -2], [2, -4], [0, -8] );
 
 	return this;
 } 
@@ -82,17 +84,16 @@ function Box(arr) {
 	this.x = this.y = 0.0;
 	this.priority = 2;
 	this.depth = 0;
-	this.mask = new Mask( [0,0], [aa,0], [aa, bb], [0,bb] );
-
-	//Add to object array
-	structObj[ structObj.length ] = this;
-
+	this.mask = new Mask( this, [0,0], [aa,0], [aa, bb], [0,bb] );
+	
 	return this;
 }
 
 	Box.prototype.evStep = function() {
 		this.depth = this.y;
 		this.mask.update(this.x,this.y);
+		this.rotation += ( 0.2 + 1.0*(keyHold(68)-keyHold(65)) );
+		this.scale += 0.01*(keyHold(87)-keyHold(83));
 	}
 
 	Box.prototype.evDraw = function() {
